@@ -12,6 +12,10 @@ instance Eq RouteNumber where
 instance Show RouteNumber where
   show (RouteNumber x) = T.asciiToUpper x
 
+takeMax : Int -> [a] -> [a]
+takeMax i = 
+  snd . foldr (\x (i, xs) -> if i > 0 then (i - 1, x :: xs) else (0, xs)) (i, [])
+
 data VehicleInfo = VehicleInfo
   with
     make : Text
@@ -27,6 +31,14 @@ template Route
     lastFiveActualTripTime : [Int]
   where
     signatory operator
+    choice UpdateLastTripTime : ContractId Route
+      with
+        trip : Trip
+      controller trip.passenger
+      do
+        create this
+          with
+            lastFiveActualTripTime = takeMax 5 $ trip.timeTaken :: lastFiveActualTripTime 
   
 template Trip
   with
