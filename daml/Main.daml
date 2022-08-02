@@ -26,6 +26,7 @@ template Route
     vehicleInfo : VehicleInfo
     lastFiveActualTripTime : [Int]
   where
+    ensure length lastFiveActualTripTime <= 5
     signatory operator
     choice UpdateLastTripTime : ContractId Route
       with
