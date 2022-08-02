@@ -1,0 +1,61 @@
+module Main where
+
+import Daml.Script
+import DA.Text qualified as T
+
+newtype RouteNumber = RouteNumber Text
+
+instance Eq RouteNumber where
+  (==) (RouteNumber x) (RouteNumber y) =
+    T.asciiToUpper x == T.asciiToUpper y
+
+instance Show RouteNumber where
+  show (RouteNumber x) = T.asciiToUpper x
+
+data VehicleInfo = VehicleInfo
+  with
+    make : Text
+    model : Text
+  deriving (Eq, Show)
+
+-- Assuming end-to-end trip with no stops in-between
+template Route
+  with
+    operator : Party
+    routeNumber : RouteNumber
+    vehicleInfo : VehicleInfo
+    lastFiveActualTripTime : [Int]
+  where
+    signatory operator
+  
+template Trip
+  with
+    passenger : Party
+    routeNumber : RouteNumber
+    timeTaken : Int
+  where
+    signatory passenger
+
+setup : Script ()
+setup = script do
+  pure ()
+-- -- user_setup_begin
+--   alice <- allocatePartyWithHint "Alice" (PartyIdHint "Alice")
+--   bob <- allocatePartyWithHint "Bob" (PartyIdHint "Bob")
+--   aliceId <- validateUserId "alice"
+--   bobId <- validateUserId "bob"
+--   createUser (User aliceId (Some alice)) [CanActAs alice]
+--   createUser (User bobId (Some bob)) [CanActAs bob]
+-- -- user_setup_end
+
+--   aliceTV <- submit alice do
+--     createCmd Asset with
+--       issuer = alice
+--       owner = alice
+--       name = "TV"
+
+--   bobTV <- submit alice do
+--     exerciseCmd aliceTV Give with newOwner = bob
+
+--   submit bob do
+--     exerciseCmd bobTV Give with newOwner = alice
