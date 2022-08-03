@@ -3,14 +3,14 @@ module Main where
 import Daml.Script
 import DA.Text qualified as T
 
-newtype RouteNumber = RouteNumber Text
+newtype RouteNumber = RouteNumber { unRouteNumber : Text }
 
 instance Eq RouteNumber where
   (==) (RouteNumber x) (RouteNumber y) =
     T.asciiToUpper x == T.asciiToUpper y
 
 instance Show RouteNumber where
-  show (RouteNumber x) = T.asciiToUpper x
+  show = T.asciiToUpper . unRouteNumber
 
 data VehicleInfo = VehicleInfo
   with
