@@ -1,0 +1,60 @@
+module MainTest where
+
+import Daml.Script
+import Main
+
+setup : Script ()
+setup = script do
+  rex <- allocatePartyWithHint "Rex" (PartyIdHint "Rex")
+  busCo <- allocatePartyWithHint "BusCo" (PartyIdHint "BusCo")
+
+  routeCid <- busCo `submit`
+    createCmd Route with
+      operator = busCo
+      routeNumber = RouteNumber "2X"
+      vehicleInfo = VehicleInfo with
+        make = "Volvo"
+        model = "Euro 5"
+      lastFiveActualTripTime = []
+
+  tripCid <- rex `submit`
+    createCmd Trip with
+      passenger = rex
+      operator = busCo
+      routeNumber = RouteNumber "2X"
+      timeTaken = 50
+
+  tripCid2 <- rex `submit`
+    createCmd Trip with
+      passenger = rex
+      operator = busCo
+      routeNumber = RouteNumber "2X"
+      timeTaken = 48
+
+  routeCid1 <- busCo `submit`
+    exerciseCmd routeCid UpdateLastTripTime with tripCid
+
+  routeCid2 <- busCo `submit` 
+    exerciseCmd routeCid1 UpdateLastTripTime with tripCid = tripCid2
+
+  pure ()
+-- -- user_setup_begin
+--   alice <- allocatePartyWithHint "Alice" (PartyIdHint "Alice")
+--   bob <- allocatePartyWithHint "Bob" (PartyIdHint "Bob")
+--   aliceId <- validateUserId "alice"
+--   bobId <- validateUserId "bob"
+--   createUser (User aliceId (Some alice)) [CanActAs alice]
+--   createUser (User bobId (Some bob)) [CanActAs bob]
+-- -- user_setup_end
+
+--   aliceTV <- submit alice do
+--     createCmd Asset with
+--       issuer = alice
+--       owner = alice
+--       name = "TV"
+
+--   bobTV <- submit alice do
+--     exerciseCmd aliceTV Give with newOwner = bob
+
+--   submit bob do
+--     exerciseCmd bobTV Give with newOwner = alice
