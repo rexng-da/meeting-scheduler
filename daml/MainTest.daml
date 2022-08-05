@@ -5,7 +5,6 @@ import Daml.Script
 import DA.Time
 import DA.Date
 import DA.Set qualified as Set
-import DA.Optional qualified as Opt
 
 script : Script ()
 script = do
@@ -13,16 +12,22 @@ script = do
     bob <- allocatePartyWithHint "Bob" (PartyIdHint "Bob")
     alice <- allocatePartyWithHint "Alice" (PartyIdHint "Alice")
 
-    proposalCid <- rex `submit` createCmd MeetingProposal with
-        host = rex
-        participants = Set.fromList [bob, alice]
-        timeRange = time (date 2022 Aug 5) 15 0 0 `range` time (date 2022 Aug 5) 16 0 0
-        accepted = Set.empty
+    let meeting = Meeting with
+            host = rex
+            participants = Set.fromList [bob, alice]
+            timeRange = time (date 2022 Aug 5) 15 0 0 `range` time (date 2022 Aug 5) 16 0 0
     
-    bobAcceptedCid <- bob `submit` exerciseCmd proposalCid AcceptMeetingProposal with
+    proposalCid <- rex `submit` createCmd MeetingProposal with
+        accepted = Set.singleton rex
+        ..
+    
+    proposalCid <- bob `submit` exerciseCmd proposalCid AcceptMeetingProposal with
         actor = bob
 
-    aliceAcceptedCidEither <- alice `submit` exerciseCmd bobAcceptedCid AcceptMeetingProposal with
+    proposalCid <- alice `submit` exerciseCmd proposalCid AcceptMeetingProposal with
         actor = alice
+
+    meetingCid <- bob `submit` exerciseCmd proposalCid FinalizeMeeting with
+        actor = bob
 
     pure ()

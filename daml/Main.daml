@@ -1,5 +1,6 @@
 module Main where
 
+import DA.Assert
 import DA.Set
 
 data Range a = Range
@@ -32,19 +33,23 @@ template Meeting
 
 template MeetingProposal
   with
-    host : Party
-    participants: Set Party
+    meeting : Meeting
     accepted: Set Party
-    timeRange : Range Time
   where 
-    signatory host
-    observer participants
+    signatory accepted
+    observer meeting.participants
     choice AcceptMeetingProposal : ContractId MeetingProposal
       with actor : Party
       controller actor 
       do
-        assert $ actor `member` participants
+        assert $ actor `member` meeting.participants
 
         create MeetingProposal with 
           accepted = DA.Set.insert actor accepted
           ..
+    choice FinalizeMeeting : ContractId Meeting
+      with actor : Party
+      controller actor
+      do
+        accepted === DA.Set.insert meeting.host meeting.participants
+        create meeting
