@@ -1,4 +1,6 @@
-module Main (Range, Meeting) where
+module Main where
+
+import DA.Set
 
 data Range a = Range
   with
@@ -11,6 +13,9 @@ instance Eq a => Eq (Range a) where
 instance Show a => Show (Range a) where
   show (Range with ..) = show start <> "–" <> show end
 
+instance Functor Range where
+  fmap f (Range with ..) = Range with start = f start, end = f end
+
 range : Time -> Time -> Range Time
 range start end =
     if start > end
@@ -20,7 +25,7 @@ range start end =
 template Meeting
   with
     host : Party
-    participants : [Party]
+    participants : Set Party
     timeRange : Range Time
   where
     signatory host, participants
@@ -28,9 +33,15 @@ template Meeting
 template MeetingProposal
   with
     host : Party
-    participants: [Party]
+    participants: Set Party
+    accepted: Set Party
     timeRange : Range Time
   where 
     signatory host
     observer participants
-    
+    choice AcceptMeetingProposal : Optional (ContractId Meeting)
+      with actor : Party
+      controller actor 
+      do
+        assert $ actor `member` participants
+        pure None
