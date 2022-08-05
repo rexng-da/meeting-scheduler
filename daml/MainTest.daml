@@ -1,0 +1,25 @@
+module MainTest where
+
+import Main
+import Daml.Script
+import DA.Time
+import DA.Date
+import DA.Set qualified as Set
+
+script : Script ()
+script = do
+    rex <- allocatePartyWithHint "Rex" (PartyIdHint "Rex")
+    bob <- allocatePartyWithHint "Bob" (PartyIdHint "Bob")
+    alice <- allocatePartyWithHint "Alice" (PartyIdHint "Alice")
+
+    proposalCid <- rex `submit` createCmd MeetingProposal with
+        host = rex
+        participants = Set.fromList [bob, alice]
+        timeRange = time (date 2022 Aug 5) 15 0 0 `range` time (date 2022 Aug 5) 16 0 0
+        accepted = Set.empty
+    
+    Some bobAcceptedCid <- bob `submit` exerciseCmd proposalCid AcceptMeetingProposal with
+        actor = bob
+    Some aliceAcceptedCid <- alice `submit` exerciseCmd bobAcceptedCid AcceptMeetingProposal with
+        actor = alice
+    pure ()
