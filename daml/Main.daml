@@ -39,9 +39,12 @@ template MeetingProposal
   where 
     signatory host
     observer participants
-    choice AcceptMeetingProposal : Optional (ContractId Meeting)
+    choice AcceptMeetingProposal : ContractId MeetingProposal
       with actor : Party
       controller actor 
       do
         assert $ actor `member` participants
-        pure None
+
+        create MeetingProposal with 
+          accepted = DA.Set.insert actor accepted
+          ..
