@@ -18,16 +18,35 @@ template MeetingProposal
     accepted: Set Party
   where 
     signatory accepted
-    observer meeting.participants
+    observer meeting.host, meeting.participants
+
+    let allParticipants = DA.Set.insert meeting.host meeting.participants
+
     choice AcceptMeetingProposal : ContractId MeetingProposal
       with actor : Party
       controller actor 
       do
-        assert $ actor `member` meeting.participants
+        assert $ actor `member` allParticipants
 
         create MeetingProposal with 
           accepted = DA.Set.insert actor accepted
           ..
+
+    choice ReproposeTime : ContractId MeetingProposal
+      with 
+        newTimeRange : Range Time
+        actor : Party
+      controller actor
+      do
+        assert $ actor `member` meeting.participants
+
+        create MeetingProposal with
+          accepted = DA.Set.singleton actor
+          meeting = meeting with
+            timeRange = newTimeRange
+            host = meeting.host
+            participants = meeting.participants
+          
     choice FinalizeMeeting : ContractId Meeting
       with actor : Party
       controller actor
