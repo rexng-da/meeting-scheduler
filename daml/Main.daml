@@ -38,7 +38,7 @@ template MeetingProposal
         actor : Party
       controller actor
       do
-        assert $ actor `member` meeting.participants
+        assert $ actor `member` allParticipants
 
         create MeetingProposal with
           accepted = DA.Set.singleton actor
@@ -51,5 +51,5 @@ template MeetingProposal
       with actor : Party
       controller actor
       do
-        accepted === DA.Set.insert meeting.host meeting.participants
+        accepted === allParticipants
         create meeting

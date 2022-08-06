@@ -33,8 +33,8 @@ script = do
 
     pure ()
 
-repropose_time_script : Script ()
-repropose_time_script = do
+participant_repropose_time_script : Script ()
+participant_repropose_time_script = do
     rex <- allocatePartyWithHint "Rex" (PartyIdHint "Rex")
     bob <- allocatePartyWithHint "Bob" (PartyIdHint "Bob")
     alice <- allocatePartyWithHint "Alice" (PartyIdHint "Alice")
@@ -60,6 +60,39 @@ repropose_time_script = do
 
     proposalCid <- rex `submit` exerciseCmd proposalCid AcceptMeetingProposal with
         actor = rex
+
+    meetingCid <- rex `submit` exerciseCmd proposalCid FinalizeMeeting with
+        actor = rex
+
+    pure ()
+
+host_repropose_time_script : Script ()
+host_repropose_time_script = do
+    rex <- allocatePartyWithHint "Rex" (PartyIdHint "Rex")
+    bob <- allocatePartyWithHint "Bob" (PartyIdHint "Bob")
+    alice <- allocatePartyWithHint "Alice" (PartyIdHint "Alice")
+
+    let meeting = Meeting with
+            host = rex
+            participants = Set.fromList [bob, alice]
+            timeRange = time (date 2022 Aug 5) 15 0 0 <-> time (date 2022 Aug 5) 16 0 0
+    
+    proposalCid <- rex `submit` createCmd MeetingProposal with
+        accepted = Set.singleton rex
+        ..
+    
+    proposalCid <- bob `submit` exerciseCmd proposalCid AcceptMeetingProposal with
+        actor = bob
+
+    proposalCid <- rex `submit` exerciseCmd proposalCid ReproposeTime with
+        actor = rex
+        newTimeRange = time (date 2022 Aug 15) 15 0 0 <-> time (date 2022 Aug 15) 16 0 0
+
+    proposalCid <- bob `submit` exerciseCmd proposalCid AcceptMeetingProposal with
+        actor = bob
+
+    proposalCid <- alice `submit` exerciseCmd proposalCid AcceptMeetingProposal with
+        actor = alice
 
     meetingCid <- rex `submit` exerciseCmd proposalCid FinalizeMeeting with
         actor = rex
