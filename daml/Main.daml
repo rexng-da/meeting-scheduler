@@ -1,27 +1,8 @@
 module Main where
 
+import Range
 import DA.Assert
 import DA.Set
-
-data Range a = Range
-  with
-      start: a
-      end: a
-
-instance Eq a => Eq (Range a) where
-  x == y = x.start == y.start && x.end == y.end
-
-instance Show a => Show (Range a) where
-  show (Range with ..) = show start <> "–" <> show end
-
-instance Functor Range where
-  fmap f (Range with ..) = Range with start = f start, end = f end
-
-range : Time -> Time -> Range Time
-range start end =
-    if start > end
-    then Range with start = end, end = start
-    else Range with ..
 
 template Meeting
   with
