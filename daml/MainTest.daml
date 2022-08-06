@@ -1,6 +1,7 @@
 module MainTest where
 
 import Main
+import Range
 import Daml.Script
 import DA.Time
 import DA.Date
