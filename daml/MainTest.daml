@@ -3,6 +3,7 @@ module MainTest where
 import Main
 import Range
 import Daml.Script
+import DA.Assert
 import DA.Time
 import DA.Date
 import DA.Set qualified as Set
@@ -98,3 +99,33 @@ host_repropose_time_script = do
         actor = rex
 
     pure ()
+
+ranges_always_have_start_less_than_end : Script ()
+ranges_always_have_start_less_than_end = do
+    let
+        start = 23
+        end = 21
+        range = start <-> end
+
+    assertMsg "Start should be less than end" (range.start <= range.end)
+
+ranges_obey_functor_identity : Script ()
+ranges_obey_functor_identity = do
+    let
+        start = 23
+        end = 21
+        expected = start <-> end
+        actual = fmap identity expected
+
+    expected === actual
+
+ranges_obey_functor_composition : Script ()
+ranges_obey_functor_composition = do
+    let
+        start = 23
+        end = 21
+        expected = start <-> end
+        actual1 = (fmap (+ 2) . fmap (+ 1)) expected
+        actual2 = fmap ((+ 2) . (+ 1)) expected
+
+    actual2 === actual1

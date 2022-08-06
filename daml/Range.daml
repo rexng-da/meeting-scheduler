@@ -21,7 +21,7 @@ instance Functor Range where
 range : Ord a => a -> a -> Range a
 range start end =
     if start > end
-    then Range with start = end, end = start
+    then range end start
     else Range with ..
 
 (<->) : Ord a => a -> a -> Range a
