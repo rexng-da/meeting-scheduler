@@ -1,0 +1,52 @@
+module RangeTest where
+
+import Range
+import DA.Assert
+import DA.Monoid
+import Daml.Script
+
+ranges_always_have_start_less_than_end : Script ()
+ranges_always_have_start_less_than_end = do
+    let range = 23 <-> 21
+
+    assertMsg "Start should be less than end" (range.start <= range.end)
+
+ranges_obey_functor_identity : Script ()
+ranges_obey_functor_identity = do
+    let expected = 21 <-> 23
+        actual = fmap identity expected
+
+    expected === actual
+
+ranges_obey_functor_composition : Script ()
+ranges_obey_functor_composition = do
+    let start = 23
+        end = 21
+        expected = start <-> end
+        actual1 = (fmap (+ 2) . fmap (+ 1)) expected
+        actual2 = fmap ((+ 2) . (+ 1)) expected
+
+    actual2 === actual1
+
+ranges_have_monoid_identity : Script ()
+ranges_have_monoid_identity = do
+    let expected = Sum 21 <-> Sum 23
+        actual = expected <> mempty
+
+    expected === actual
+
+ranges_are_applicatives : Script ()
+ranges_are_applicatives = do
+    let
+        sut1 = 2 <-> 4
+        sut2 = 3 <-> 5
+        expected = 5 <-> 9
+
+    expected === liftA2 (+) sut1 sut2
+
+isInRange_returns_true_if_value_is_in_range : Script ()
+isInRange_returns_true_if_value_is_in_range = do
+    let sut = 2 <-> 4
+        value = 3
+
+    assert $ isInRange value sut

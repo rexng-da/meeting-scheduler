@@ -1,6 +1,7 @@
 module Range (
     Range,
     range,
+    isInRange,
     (<->)) 
 where
 
@@ -33,6 +34,9 @@ range start end =
     if start > end
     then range end start
     else Range with ..
+
+isInRange : Ord a => a -> Range a -> Bool
+isInRange x r = x >= r.start && x <= r.end
 
 (<->) : Ord a => a -> a -> Range a
 (<->) = range
