@@ -4,26 +4,24 @@ import Range
 import DA.Assert
 import DA.Set
 
-template Meeting
-  with
+template Meeting with
     host : Party
     participants : Set Party
     timeRange : Range Time
   where
     signatory host, participants
 
-template MeetingProposal
-  with
+template MeetingProposal with
     meeting : Meeting
-    accepted: Set Party
+    accepted : Set Party
   where 
     signatory accepted
     observer meeting.host, meeting.participants
 
     let allParticipants = DA.Set.insert meeting.host meeting.participants
 
-    choice AcceptMeetingProposal : ContractId MeetingProposal
-      with actor : Party
+    choice AcceptMeetingProposal : ContractId MeetingProposal with
+        actor : Party
       controller actor 
       do
         assert $ actor `member` allParticipants
@@ -32,8 +30,7 @@ template MeetingProposal
           accepted = DA.Set.insert actor accepted
           ..
 
-    choice ReproposeTime : ContractId MeetingProposal
-      with 
+    choice ReproposeTime : ContractId MeetingProposal with 
         newTimeRange : Range Time
         actor : Party
       controller actor
@@ -47,8 +44,8 @@ template MeetingProposal
             host = meeting.host
             participants = meeting.participants
           
-    choice FinalizeMeeting : ContractId Meeting
-      with actor : Party
+    choice FinalizeMeeting : ContractId Meeting with
+        actor : Party
       controller actor
       do
         accepted === allParticipants

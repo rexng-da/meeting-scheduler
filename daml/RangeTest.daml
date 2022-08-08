@@ -50,3 +50,10 @@ isInRange_returns_true_if_value_is_in_range = do
         value = 3
 
     assert $ isInRange value sut
+
+isNotInRange_returns_true_if_value_is_in_range : Script ()
+isNotInRange_returns_true_if_value_is_in_range = do
+    let sut = 2 <-> 4
+        value = 3
+
+    assert $ not $ isNotInRange value sut

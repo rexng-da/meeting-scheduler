@@ -3,10 +3,8 @@ module MainTest where
 import Main
 import Range
 import Daml.Script
-import DA.Assert
 import DA.Time
 import DA.Date
-import DA.Monoid.Types
 import DA.Set qualified as Set
 
 script : Script ()

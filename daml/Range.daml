@@ -2,13 +2,12 @@ module Range (
     Range,
     range,
     isInRange,
-    (<->)) 
-where
+    isNotInRange,
+    (<->)) where
 
-data Range a = Range
-  with
-      start: a
-      end: a
+data Range a = Range with
+    start : a
+    end : a
 
 instance Eq a => Eq (Range a) where
   x == y = x.start == y.start && x.end == y.end
@@ -37,6 +36,9 @@ range start end =
 
 isInRange : Ord a => a -> Range a -> Bool
 isInRange x r = x >= r.start && x <= r.end
+
+isNotInRange : Ord a => a -> Range a -> Bool
+isNotInRange = curry $ not . uncurry isInRange
 
 (<->) : Ord a => a -> a -> Range a
 (<->) = range
