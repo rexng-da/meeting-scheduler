@@ -6,6 +6,7 @@ import Daml.Script
 import DA.Assert
 import DA.Time
 import DA.Date
+import DA.Monoid.Types
 import DA.Set qualified as Set
 
 script : Script ()
@@ -129,3 +130,13 @@ ranges_obey_functor_composition = do
         actual2 = fmap ((+ 2) . (+ 1)) expected
 
     actual2 === actual1
+
+ranges_have_monoid_identity : Script ()
+ranges_have_monoid_identity = do
+    let
+        start = Sum 21
+        end = Sum 23
+        expected = start <-> end
+        actual = expected <> mempty
+
+    expected === actual

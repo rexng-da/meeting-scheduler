@@ -18,6 +18,12 @@ instance Show a => Show (Range a) where
 instance Functor Range where
   fmap f (Range with ..) = Range with start = f start, end = f end
 
+instance Semigroup a => Semigroup (Range a) where
+  x <> y = Range with start = x.start <> y.start, end = x.end <> y.end
+
+instance Monoid a => Monoid (Range a) where
+  mempty = Range with start = mempty, end = mempty
+
 range : Ord a => a -> a -> Range a
 range start end =
     if start > end
