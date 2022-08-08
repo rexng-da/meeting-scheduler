@@ -18,6 +18,10 @@ instance Show a => Show (Range a) where
 instance Functor Range where
   fmap f (Range with ..) = Range with start = f start, end = f end
 
+instance Applicative Range where
+  pure x = Range with start = x, end = x
+  f <*> x = Range with start = f.start x.start, end = f.end x.end
+
 instance Semigroup a => Semigroup (Range a) where
   x <> y = Range with start = x.start <> y.start, end = x.end <> y.end
 

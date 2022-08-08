@@ -140,3 +140,12 @@ ranges_have_monoid_identity = do
         actual = expected <> mempty
 
     expected === actual
+
+ranges_are_applicatives : Script ()
+ranges_are_applicatives = do
+    let
+        sut1 = 2 <-> 4
+        sut2 = 3 <-> 5
+        expected = 5 <-> 9
+
+    expected === liftA2 (+) sut1 sut2
