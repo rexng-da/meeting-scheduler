@@ -38,7 +38,7 @@ isInRange : Ord a => a -> Range a -> Bool
 isInRange x r = x >= r.start && x <= r.end
 
 isNotInRange : Ord a => a -> Range a -> Bool
-isNotInRange = curry $ not . uncurry isInRange
+isNotInRange = (not .) . isInRange 
 
 (<->) : Ord a => a -> a -> Range a
 (<->) = range
