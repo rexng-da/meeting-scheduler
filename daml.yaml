@@ -4,7 +4,7 @@
 sdk-version: 2.3.2
 name: meeting-scheduler
 source: daml
-init-script: Main:setup
+init-script: MainTest:init
 version: 0.0.1
 dependencies:
   - daml-prim

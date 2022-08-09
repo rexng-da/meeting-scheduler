@@ -1,0 +1,8 @@
+nodes.local.start
+
+public.domains.connect_local(busdomain)
+busoperator.domains.connect_local(busdomain)
+
+busoperator.health.ping(public)
+
+participants.all.dars.upload(".daml/dist/meeting-scheduler-0.0.1.dar")

@@ -3,9 +3,23 @@ module MainTest where
 import Main
 import Range
 import Daml.Script
+import DA.Text qualified as T
 import DA.Time
 import DA.Date
 import DA.Set qualified as Set
+
+allocateUser : Text -> Script ()
+allocateUser alias = do
+    p <- allocatePartyWithHint alias (PartyIdHint alias)
+    userId <- validateUserId $ T.asciiToLower alias
+    let u = User userId (Some p)
+    createUser u $ [CanActAs p, CanReadAs p]
+
+init : Script ()
+init =
+    allocateUser "Rex"
+    *> allocateUser "Bob"
+    *> allocateUser "Alice"
 
 script : Script ()
 script = do
