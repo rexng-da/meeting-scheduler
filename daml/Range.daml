@@ -5,6 +5,9 @@ module Range (
     isNotInRange,
     (<->)) where
 
+import DA.Foldable
+import DA.Traversable
+
 data Range a = Range with
     start : a
     end : a
@@ -27,6 +30,12 @@ instance Semigroup a => Semigroup (Range a) where
 
 instance Monoid a => Monoid (Range a) where
   mempty = Range with start = mempty, end = mempty
+
+instance Foldable Range where
+  foldMap f x = f x.start <> f x.end
+
+instance Traversable Range where
+  mapA f x = Range <$> f x.start <*> f x.end
 
 range : Ord a => a -> a -> Range a
 range start end =

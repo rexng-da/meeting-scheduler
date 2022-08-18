@@ -2,6 +2,7 @@ module RangeTest where
 
 import Range
 import DA.Assert
+import DA.Foldable qualified as F
 import DA.Monoid
 import Daml.Script
 
@@ -57,3 +58,17 @@ isNotInRange_returns_true_if_value_is_in_range = do
         value = 3
 
     assert $ not $ isNotInRange value sut
+
+ranges_are_foldable : Script ()
+ranges_are_foldable = do
+    let sut = 2 <-> 4
+        actual = F.foldr (\x acc -> acc <> show x) "" sut
+
+    "42" === actual
+
+ranges_are_traversable : Script ()
+ranges_are_traversable = do
+    let sut = [ 2 <-> 4, 3 <-> 6 ]
+        expected = range [2, 3] [4, 6]
+
+    expected === sequence sut
